@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1558104637 source:g:\coding\test\main.cpp
+	<stdio.h>
+	<fstream>
+	<string>
+	"zhashmap.h"
+
+1558104540 g:\coding\test\zhashmap.h
+

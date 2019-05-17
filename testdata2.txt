@@ -1,0 +1,5 @@
+huawei
+apple
+meizu
+mi
+nokia
