@@ -10,10 +10,9 @@ private:
     class KeyNode
     {
         public:
-        _Value  value;      //Store the value
-        _Key    key;        //Store the keyword
+        _Value  value;
+        _Key    key;
         int    used;
-        //if the type of Value/Key is your own class, make sure they can handle copy constructor and operator =
         KeyNode():used(0){}
         KeyNode(const KeyNode & kn)
         {
@@ -36,7 +35,7 @@ public:
     ~HashMap();
     bool insert(const Key& hashKey, const Value& value);
     bool remove(const Key& hashKey);
-    void rehash(int size_);  //use it when rehashing
+    void rehash(int size_);
     Value& find(const Key& hashKey);
     const Value& operator [](const Key& hashKey) const;
     Value& operator [](const Key& hashKey);
@@ -45,10 +44,10 @@ private:
     HashFunc hash;
     EqualKey equal;
     KeyNode<Key ,Value> *table;
-    int size;    //current number of itmes
-    int capacity;   //capacity of the array
+    int size;
+    int capacity;
     static const double loadingFactor;
-    int findKey(const Key& hashKey);  //find the index of a key
+    int findKey(const Key& hashKey);
 };
 
 template<class Key , class Value , class HashFunc , class EqualKey>
@@ -59,11 +58,9 @@ HashMap<Key, Value, HashFunc, EqualKey>::HashMap(int size_)
 {
     hash = HashFunc();
     equal = EqualKey();
-    capacity = size_; //initialize the capacity with first primer 57
-    //resize the table with capacity because an extra one is used
-    //to return the NULL type of Value in the function find
+    capacity = size_;
     table = new KeyNode<Key,Value>[capacity+1];
-    for(int i = 0 ; i < capacity ; i++)    //initialize the table
+    for(int i = 0 ; i < capacity ; i++)
         table[i].used = 0;
     size = 0;
 }
@@ -78,18 +75,14 @@ template<class Key, class Value, class HashFunc, class EqualKey>
 bool HashMap<Key, Value, HashFunc, EqualKey>::insert(const Key& hashKey, const Value& value)
 {
     int index = hash(hashKey)%capacity;
-    //cout<<"Index is "<<index<<endl;
-    if(table[index].used == 1)  //the key-value's hash is unique
+    if(table[index].used == 1)
     {
-        //cout<<"The key-value must be unique!"<<endl;
         return false;
     }
-    table[index].used = 1;         //modify the KeyNode
+    table[index].used = 1;
     table[index].key = hashKey;
     table[index].value = value;
-
     size++;
-    //if the table's size is too large ,then rehash it
     if (size >= capacity * loadingFactor)
         rehash(capacity);
     return true;
@@ -99,36 +92,34 @@ template<class Key, class Value, class HashFunc, class EqualKey>
 void HashMap<Key, Value, HashFunc, EqualKey>::rehash(int size_)
 {
     int pastsize = capacity;
-    //create a new array to copy the information in the old table
     capacity = size_;
     KeyNode<Key,Value>* tmp = new KeyNode<Key,Value>[capacity];
     for(int i = 0 ; i < pastsize ; i++)
     {
-        if(table[i].used == 1)       //copy the KeyNode into the tmp array
+        if(table[i].used == 1)
         {
             tmp[i] = table[i];
         }
     }
-    delete []table; //release the memory of the old table
-
-    table = new KeyNode<Key,Value>[capacity+1];   //resize the table
-    for(int i = 0 ; i < capacity ; i++) //initialize the table
+    delete []table;
+    table = new KeyNode<Key,Value>[capacity+1];
+    for(int i = 0 ; i < capacity ; i++)
     {
         table[i].used = 0;
     }
-    for(int i = 0 ; i < pastsize ; i++) //insert the item into the table one by one
+    for(int i = 0 ; i < pastsize ; i++)
     {
         if(tmp[i].used == 1)
             insert(tmp[i].key, tmp[i].value);
     }
-    delete []tmp;               //delete the tmp array
+    delete []tmp;
 }
 
 template<class Key, class Value, class HashFunc, class EqualKey>
 bool HashMap<Key, Value, HashFunc, EqualKey>::remove(const Key& hashKey)
 {
-    int index = findKey(hashKey); //find the index of the key
-    if(index < 0) //if find modify the flag with 0,else print out "no such key!"
+    int index = findKey(hashKey);
+    if(index < 0)
     {
         return false;
     }
@@ -144,9 +135,9 @@ template<class Key, class Value, class HashFunc, class EqualKey>
 Value& HashMap<Key, Value, HashFunc, EqualKey>::find(const Key& hashKey)
 {
     int index = findKey(hashKey);
-    if(index < 0) //if index <0 ,not found,else return the index
+    if(index < 0)
     {
-        return table[capacity].value; //return NULL
+        return table[capacity].value;
     }
     else
     {
@@ -157,13 +148,13 @@ Value& HashMap<Key, Value, HashFunc, EqualKey>::find(const Key& hashKey)
 template<class Key, class Value, class HashFunc, class EqualKey>
 const Value& HashMap<Key, Value, HashFunc, EqualKey>::operator[](const Key& hashKey) const
 {
-    return find(hashKey); //overload the operation to return the value of the element
+    return find(hashKey);
 }
 
 template<class Key, class Value, class HashFunc, class EqualKey>
 Value& HashMap<Key, Value, HashFunc, EqualKey>::operator[](const Key& hashKey)
 {
-    return find(hashKey); //overload the operation to return the value of the element
+    return find(hashKey);
 }
 
 template<class Key, class Value, class HashFunc, class EqualKey>

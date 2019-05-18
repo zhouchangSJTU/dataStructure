@@ -46,16 +46,16 @@ int main()
     char *file_2 = FILE_2_PATH;
     string line = "";
     string line_2 = "";
-    //printf("test");
-    //char *line_2 = nullptr;
+
     size_t line_len = BUFF_LEN;
     int len = 0;
-    HashMap<string, string, HashFunc, EqualKey> data(1000000);
-    HashMap<string, string, HashFunc, EqualKey> data_both(1000000);
-    //printf("test");
+
+    HashMap<string, string, HashFunc, EqualKey> *data = new HashMap<string, string, HashFunc, EqualKey>(1000000);
+    HashMap<string, string, HashFunc, EqualKey> *data_both = new HashMap<string, string, HashFunc, EqualKey>(1000000);
+
     string logInfo = "test";
-    //printf("success");
     int count = 0;
+    int dcount = 0;
     ifstream fp_1(FILE_1_PATH);
     ifstream fp_2(FILE_2_PATH);
     if (!fp_1.is_open())
@@ -64,14 +64,31 @@ int main()
     }
     while((std::getline(fp_1, line)))
     {
-        data.insert(line, logInfo);
-        printf(data.find(line).c_str());
-        printf("=====\n");
-        //printf(line.c_str());
-        //printf("the content of each line is:\n%s",line);
-        //printf("the length of each line is: %d\n\n",len);
+        if(dcount<1000000)
+        {
+            data->insert(line, logInfo);
+            dcount = dcount + 1;
+        }
+        else
+        {
+            if (!fp_2.is_open())
+            {
+                return -1;
+            }
+            while((std::getline(fp_2, line_2)))
+            {
+                if(data->find(line_2).length()!=0)
+                {
+                    count = count + 1;
+                    data_both->insert(line_2, data->find(line_2));
+                }
+            }
+            fp_2.close();
+            delete data;
+            HashMap<string, string, HashFunc, EqualKey> *data = new HashMap<string, string, HashFunc, EqualKey>(1000000);
+            dcount = 0;
+        }
     }
-    fp_1.close();
 
     if (!fp_2.is_open())
     {
@@ -79,21 +96,15 @@ int main()
     }
     while((std::getline(fp_2, line_2)))
     {
-        printf(line_2.c_str());
-        printf("ccc\n");
-        printf(data.find(line_2).c_str());
-        printf("xxx\n");
-        if(data.find(line_2).length()!=0)
+        printf(data->find(line_2).c_str());
+        if(data->find(line_2).length()!=0)
         {
             count = count + 1;
-            printf("success");
-            data_both.insert(line_2, data.find(line_2));
+            data_both->insert(line_2, data->find(line_2));
         }
     }
-    printf(to_string(count).c_str());
-
     fp_2.close();
-
-    //getchar();
+    fp_1.close();
+    printf(to_string(count).c_str());
     return 0;
 }
